@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#244d39">
+  <title>蘑菇地 · 一日一记</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --forest: #244d39;
+      --deep: #20382d;
+      --moss: #66835b;
+      --leaf: #dce8c8;
+      --paper: #fffdf6;
+      --ink: #27382f;
+      --muted: #788177;
+      --red: #d65a4a;
+      --gold: #efc76c;
+      --lilac: #827387;
+      --line: #e8e8d9;
+      --scene: url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=2000&q=85");
+      --cap-pattern: radial-gradient(ellipse at 32% 30%, #fff8df 0 5%, transparent 5.7%), radial-gradient(ellipse at 68% 43%, #fff8df 0 4%, transparent 4.7%), radial-gradient(ellipse at 48% 67%, #fff8df 0 5.5%, transparent 6.2%);
+      font-family: "Trebuchet MS", "Microsoft YaHei", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background-color: #d6dfc6;
+      background-image: linear-gradient(180deg, rgba(22, 53, 38, .36), rgba(32, 63, 43, .26) 44%, rgba(32, 58, 38, .48)),
+        radial-gradient(ellipse at 10% 82%, rgba(228, 233, 193, .25), transparent 31%),
+        radial-gradient(ellipse at 89% 68%, rgba(215, 225, 182, .18), transparent 29%),
+        repeating-linear-gradient(112deg, transparent 0 88px, rgba(234, 236, 205, .045) 90px 94px, transparent 95px 178px),
+        var(--scene);
+      background-position: center;
+      background-size: cover;
+      background-attachment: fixed;
+    }
+    body::before {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      content: "";
+      background: linear-gradient(180deg, rgba(22, 53, 38, .62), rgba(32, 63, 43, .38) 42%, rgba(32, 58, 38, .68)),
+        radial-gradient(ellipse at 15% 85%, rgba(216, 229, 182, .23), transparent 38%);
+    }
+    button, textarea { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, textarea:focus-visible { outline: 3px solid #e8bd62; outline-offset: 3px; }
+    .app-shell { width: min(1120px, calc(100% - 44px)); margin: 0 auto; padding: 28px 0 56px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; color: #fffdf5; }
+    .brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
+    .brand-mark { display: grid; width: 43px; height: 43px; place-items: center; border: 1px solid rgba(255,255,255,.3); border-radius: 50%; background: rgba(255,255,255,.12); font-size: 24px; }
+    .brand-name { font-family: "STKaiti", "KaiTi", Georgia, serif; font-size: 21px; letter-spacing: 0; }
+    .brand-caption { margin-top: 2px; color: rgba(255,255,255,.72); font-size: 10px; letter-spacing: .03em; }
+    .top-actions { display: flex; align-items: center; gap: 9px; }
+    .soft-button, .fragment-button { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid rgba(255,255,255,.32); border-radius: 7px; padding: 0 14px; background: rgba(255,255,255,.12); color: #fffdf5; cursor: pointer; transition: background .2s, transform .2s; }
+    .soft-button:hover, .fragment-button:hover { background: rgba(255,255,255,.22); transform: translateY(-1px); }
+    .fragment-button { border-color: rgba(239,199,108,.56); color: #ffe4a3; }
+    .fragment-count { color: #fff; font-weight: 700; }
+    .intro { padding: 47px 0 30px; color: #fffdf5; animation: appear .5s ease both; }
+    .date-line { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; color: rgba(255,255,255,.78); font-size: 13px; }
+    .date-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px rgba(239,199,108,.16); }
+    h1 { margin: 0; font-family: "STKaiti", "KaiTi", Georgia, serif; font-size: clamp(29px, 4vw, 40px); font-weight: 500; line-height: 1.2; letter-spacing: 0; }
+    .intro p { margin: 10px 0 0; color: rgba(255,255,255,.78); font-size: 14px; }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1.13fr) minmax(310px, .87fr); align-items: start; gap: 18px; }
+    .column { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 16px; min-width: 0; }
+    .panel { border: 1px solid rgba(255,255,255,.58); border-radius: 7px; background: rgba(255,253,246,.97); box-shadow: 0 14px 44px rgba(16, 36, 24, .12); }
+    .compose { padding: 21px 22px 19px; }
+    .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+    .eyebrow { color: #858b7c; font-size: 10px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+    h2 { margin: 5px 0 0; font-size: 18px; font-weight: 700; letter-spacing: 0; }
+    .little-mushroom { font-size: 23px; transform: rotate(-8deg); }
+    .scene-label { margin: 20px 0 9px; color: #687365; font-size: 12px; font-weight: 600; }
+    .scene-picker { display: flex; flex-wrap: wrap; gap: 7px; }
+    .scene-chip { border: 1px solid #e5e7db; border-radius: 5px; padding: 7px 10px; background: #fff; color: #637064; font-size: 12px; cursor: pointer; transition: .18s ease; }
+    .scene-chip:hover { border-color: #9bab86; }
+    .scene-chip[aria-pressed="true"] { border-color: #557658; background: #edf2e4; color: #33583b; box-shadow: inset 0 0 0 1px #557658; }
+    .journal-input { display: block; width: 100%; min-height: 107px; margin-top: 12px; resize: vertical; border: 1px solid #e6e5d9; border-radius: 5px; padding: 13px 14px; background: #fffefa; color: var(--ink); font-size: 14px; line-height: 1.65; }
+    .journal-input::placeholder { color: #a1a398; }
+    .compose-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 13px; }
+    .mood-row { display: flex; align-items: center; gap: 7px; }
+    .mood-hint { color: #8a8b7f; font-size: 11px; }
+    .mood-button { width: 31px; height: 31px; border: 1px solid transparent; border-radius: 50%; background: transparent; font-size: 17px; cursor: pointer; }
+    .mood-button[aria-pressed="true"] { border-color: #d7ddc9; background: #f0f3e8; }
+    .primary-button { min-height: 42px; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 5px; padding: 0 16px; background: var(--forest); color: #fffdf5; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: .2s ease; }
+    .primary-button:hover { background: #326246; transform: translateY(-1px); }
+    .helper-line { display: flex; align-items: center; gap: 6px; margin-top: 12px; color: #95978c; font-size: 11px; }
+    .phrase-panel { overflow: hidden; }
+    .phrase-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 19px 21px 13px; }
+    .level-tag { border: 1px solid #e5e1d3; border-radius: 3px; padding: 5px 7px; color: #747469; font-size: 10px; white-space: nowrap; }
+    .phrase-context { margin: 0 21px 11px; color: #86887b; font-size: 12px; }
+    .phrase-list { display: grid; }
+    .phrase-item { display: grid; grid-template-columns: 35px minmax(0, 1fr) 32px; align-items: center; gap: 11px; padding: 13px 20px; border-top: 1px solid #efeee5; animation: appear .3s ease both; }
+    .phrase-mushroom { position: relative; width: 30px; height: 28px; }
+    .phrase-mushroom::before { position: absolute; top: 1px; left: 1px; width: 28px; height: 17px; border-radius: 16px 16px 7px 7px; background: var(--cap-pattern), #292a2a; content: ""; }
+    .phrase-mushroom::after { position: absolute; bottom: 1px; left: 10px; width: 10px; height: 13px; border-radius: 5px 5px 3px 3px; background: #ede8d9; content: ""; }
+    .phrase-en { color: #313830; font-size: 13px; font-weight: 700; line-height: 1.5; }
+    .phrase-zh { margin-top: 3px; color: #85877c; font-size: 11px; line-height: 1.45; }
+    .play-button { width: 30px; height: 30px; border: 1px solid #e7e7dd; border-radius: 50%; background: transparent; color: #566a53; font-size: 13px; cursor: pointer; }
+    .play-button:hover { border-color: #8aa07f; background: #eff3e8; }
+    .phrase-note { padding: 11px 20px 14px; background: #f6f5eb; color: #777a6e; font-size: 11px; line-height: 1.55; }
+    .phrase-note strong { color: #57664f; }
+    .garden-panel { padding: 19px 21px; }
+    .garden-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .garden-title { display: flex; align-items: center; gap: 9px; }
+    .garden-title h2 { margin: 0; font-size: 16px; }
+    .garden-date { color: #85877c; font-size: 11px; }
+    .garden-bed { position: relative; display: flex; min-height: 133px; align-items: end; gap: 12px; overflow-x: auto; margin: 15px -4px 0; padding: 0 6px 10px; }
+    .garden-bed::before { position: absolute; right: 0; bottom: 6px; left: 0; height: 29px; border-radius: 55% 55% 4px 4px / 70% 70% 8px 8px; background: #dce7cf; content: ""; }
+    .garden-bed::after { position: absolute; right: 0; bottom: 5px; left: 0; height: 2px; background: #b8c8a9; content: ""; }
+    .empty-garden { z-index: 1; width: 100%; align-self: center; padding-bottom: 9px; color: #85877c; font-size: 12px; text-align: center; }
+    .mushroom-card { position: relative; z-index: 1; display: flex; width: 112px; min-width: 112px; height: 118px; flex-direction: column; align-items: center; justify-content: flex-end; border: 0; padding: 0 6px 13px; background: transparent; text-align: center; animation: pop .38s cubic-bezier(.2,.8,.2,1) both; }
+    .mushroom-visual { position: relative; width: 57px; height: 67px; flex: 0 0 auto; }
+    .mushroom-cap { position: absolute; top: 1px; left: 0; width: 57px; height: 34px; border-radius: 33px 33px 14px 14px; background: var(--cap-pattern), var(--red); box-shadow: inset 0 -3px 0 rgba(112,43,35,.12); }
+    .mushroom-stem { position: absolute; bottom: 0; left: 20px; width: 18px; height: 39px; border-radius: 9px 9px 7px 7px; background: linear-gradient(90deg, #f8efda, #fff9e9 50%, #eadfc8); }
+    .mushroom-card time { display: block; margin-top: 5px; color: #70766b; font-size: 10px; }
+    .mushroom-card .mushroom-caption { width: 100%; overflow: hidden; margin-top: 3px; color: #485549; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .garden-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; }
+    .progress-copy { color: #73796e; font-size: 11px; }
+    .progress-track { width: 91px; height: 5px; overflow: hidden; border-radius: 8px; background: #e7e9df; }
+    .progress-fill { width: 0; height: 100%; border-radius: inherit; background: #88a16f; transition: width .4s; }
+    .review-button { border: 0; padding: 7px 0 7px 8px; background: transparent; color: #365d42; font-size: 12px; font-weight: 700; cursor: pointer; }
+    .review-button:disabled { color: #a5a89d; cursor: not-allowed; }
+    .bottom-note { margin: 21px 0 0; color: rgba(255,255,255,.74); font-size: 11px; text-align: center; }
+    .toast { position: fixed; z-index: 20; right: 18px; bottom: 18px; max-width: min(340px, calc(100% - 36px)); border: 1px solid rgba(255,255,255,.32); border-radius: 5px; padding: 12px 16px; background: #283c2e; box-shadow: 0 8px 30px rgba(0,0,0,.2); color: #fffdf5; font-size: 13px; opacity: 0; pointer-events: none; transform: translateY(8px); transition: .22s ease; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .modal-backdrop { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; overflow-y: auto; padding: 22px; background: rgba(18,34,25,.66); backdrop-filter: blur(7px); animation: appear .2s ease both; }
+    .modal { position: relative; width: min(590px, 100%); max-height: min(88vh, 830px); overflow-y: auto; border: 1px solid rgba(255,255,255,.68); border-radius: 8px; padding: 24px; background: var(--paper); box-shadow: 0 25px 90px rgba(0,0,0,.3); animation: pop .3s cubic-bezier(.2,.8,.2,1) both; }
+    .modal-close { position: absolute; top: 13px; right: 13px; width: 34px; height: 34px; border: 1px solid #e8e8dc; border-radius: 50%; background: #fff; color: #596356; font-size: 18px; cursor: pointer; }
+    .modal-heading { padding-right: 36px; }
+    .modal-heading h2 { margin-top: 4px; font-size: 21px; }
+    .modal-heading p { margin: 7px 0 0; color: #7e8176; font-size: 12px; line-height: 1.6; }
+    .shop-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 20px; }
+    .shop-item { display: grid; min-height: 162px; grid-template-rows: 1fr auto; border: 1px solid #e9e9dd; border-radius: 5px; padding: 13px; background: #fffefa; }
+    .shop-preview { display: grid; min-height: 77px; place-items: center; overflow: hidden; border-radius: 3px; background: linear-gradient(145deg,#d9e8cf,#f2e7c9); font-size: 36px; }
+    .shop-preview.night { background: linear-gradient(145deg,#9aa9aa,#d1d6c6); }
+    .shop-preview.floral { background: linear-gradient(145deg,#ead8d1,#f3e9cf); }
+    .shop-preview.ink { background: linear-gradient(145deg,#d4d7ce,#eee9da); }
+    .shop-item-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 11px; }
+    .shop-name { font-size: 12px; font-weight: 700; }
+    .shop-cost { margin-top: 3px; color: #85877b; font-size: 10px; }
+    .shop-action { min-width: 63px; min-height: 30px; border: 1px solid #dfe4d8; border-radius: 4px; background: #f3f5ed; color: #486348; font-size: 11px; cursor: pointer; }
+    .shop-action:disabled { border-color: #e4e6dc; background: #f8f8f4; color: #989b91; cursor: default; }
+    .flashback { overflow: hidden; }
+    .flash-scene { position: relative; display: grid; min-height: 179px; place-items: center; overflow: hidden; margin: -24px -24px 19px; background: linear-gradient(0deg,rgba(24,52,36,.48),rgba(24,52,36,.1)), var(--scene) center 58% / cover; }
+    .giant-mushroom { position: relative; width: 122px; height: 132px; filter: drop-shadow(0 11px 10px rgba(16,32,20,.22)); animation: float 3.2s ease-in-out infinite; }
+    .giant-cap { position: absolute; top: 2px; left: 0; width: 122px; height: 69px; border-radius: 70px 70px 26px 26px; background: var(--cap-pattern), var(--red); }
+    .giant-stem { position: absolute; bottom: 0; left: 43px; width: 36px; height: 77px; border-radius: 20px 20px 12px 12px; background: linear-gradient(90deg,#f3e8cf,#fff9e7 52%,#e5d8bd); }
+    .flash-label { position: absolute; right: 15px; bottom: 12px; color: rgba(255,255,255,.92); font-size: 10px; letter-spacing: .1em; }
+    .reflection-lead { margin: 17px 0; color: #48564a; font-size: 14px; line-height: 1.8; }
+    .reflection-list { display: grid; gap: 9px; margin: 15px 0 18px; padding: 0; list-style: none; }
+    .reflection-list li { position: relative; border-left: 2px solid #a7b58d; padding: 2px 0 2px 12px; color: #5e695e; font-size: 12px; line-height: 1.6; }
+    .flash-phrase { border-top: 1px solid #ecece2; padding-top: 14px; }
+    .flash-phrase .phrase-en { font-size: 14px; }
+    .flash-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; }
+    .sound-toggle { border: 1px solid #e6e6db; border-radius: 4px; padding: 9px 11px; background: #fff; color: #677263; font-size: 11px; cursor: pointer; }
+    .sound-toggle[aria-pressed="true"] { background: #eff3e8; color: #466145; }
+    .toast-mushroom { margin-right: 5px; }
+    body[data-background="dusk"] { --scene: linear-gradient(135deg,#516f6b,#a4ae91 48%,#e6d9bb); }
+    body[data-background="paper"] { --scene: radial-gradient(ellipse at 25% 35%,rgba(226,206,173,.55),transparent 40%), linear-gradient(135deg,#c8d6c5,#e7e2ca 56%,#d1bda3); }
+    body[data-pattern="floral"] { --cap-pattern: radial-gradient(ellipse at 32% 30%,#fff5eb 0 5%,transparent 5.7%),radial-gradient(ellipse at 68% 43%,#fff5eb 0 4%,transparent 4.7%),radial-gradient(ellipse at 48% 67%,#fff5eb 0 5.5%,transparent 6.2%); }
+    body[data-pattern="ink"] { --cap-pattern: radial-gradient(ellipse at 32% 30%,#d6d4c7 0 5%,transparent 5.7%),radial-gradient(ellipse at 68% 43%,#d6d4c7 0 4%,transparent 4.7%),radial-gradient(ellipse at 48% 67%,#d6d4c7 0 5.5%,transparent 6.2%); }
+    @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes float { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-7px) rotate(2deg); } }
+    @media (max-width: 760px) {
+      .app-shell { width: min(100% - 30px, 540px); padding-top: 17px; padding-bottom: 32px; }
+      .topbar { gap: 8px; }
+      .brand-mark { width: 38px; height: 38px; font-size: 21px; }
+      .brand-name { font-size: 18px; }
+      .brand-caption { font-size: 9px; }
+      .top-actions { gap: 6px; }
+      .soft-button, .fragment-button { min-height: 38px; gap: 6px; padding: 0 10px; font-size: 12px; }
+      .intro { padding: 36px 0 21px; }
+      .intro p { font-size: 13px; }
+      .workspace { grid-template-columns: minmax(0,1fr); gap: 13px; }
+      .column { gap: 13px; }
+      .compose { padding: 18px 17px 16px; }
+      .phrase-header { padding: 17px 17px 12px; }
+      .phrase-context { margin-right: 17px; margin-left: 17px; }
+      .phrase-item { padding-right: 16px; padding-left: 16px; }
+      .phrase-note { padding-right: 16px; padding-left: 16px; }
+      .garden-panel { padding: 17px; }
+      .bottom-note { margin-top: 16px; }
+    }
+    @media (max-width: 380px) {
+      .app-shell { width: calc(100% - 24px); }
+      .brand { gap: 8px; }
+      .brand-caption { display: none; }
+      .soft-button, .fragment-button { padding: 0 8px; font-size: 11px; }
+      .compose-footer { align-items: flex-end; }
+      .mood-hint { display: none; }
+    }
+    @media (max-width: 420px) {
+      .mood-row { gap: 4px; }
+      .mood-hint { display: none; }
+      .mood-button { width: 29px; height: 29px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body data-background="forest" data-pattern="classic">
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#today" aria-label="蘑菇地首页">
+        <span class="brand-mark" aria-hidden="true">🍄</span>
+        <span><span class="brand-name">蘑菇地</span><span class="brand-caption">MUSHROOM MOMENTS</span></span>
+      </a>
+      <div class="top-actions">
+        <button class="soft-button" id="soundButton" type="button" aria-pressed="true" title="切换音效"><span aria-hidden="true">♫</span><span>音效</span></button>
+        <button class="fragment-button" id="shopButton" type="button" title="打开装扮小铺"><span aria-hidden="true">✦</span><span class="fragment-count" id="fragmentCount">0</span><span>碎片</span></button>
+      </div>
+    </header>
+
+    <section class="intro" id="today">
+      <div class="date-line"><span class="date-dot" aria-hidden="true"></span><span id="todayDate"></span><span>·</span><span id="streakLabel">新的菌落，正在生长</span></div>
+      <h1>今天，遇见了什么？</h1>
+      <p>记下一件小事，让它在蘑菇地里慢慢长大。</p>
+    </section>
+
+    <section class="workspace" aria-label="今天的蘑菇日志">
+      <div class="column">
+        <section class="panel compose" aria-labelledby="composeTitle">
+          <div class="panel-heading">
+            <div><div class="eyebrow">A LITTLE MOMENT</div><h2 id="composeTitle">记下这一刻</h2></div>
+            <span class="little-mushroom" aria-hidden="true">🍄</span>
+          </div>
+          <div class="scene-label">这件事发生在……</div>
+          <div class="scene-picker" id="scenePicker" role="group" aria-label="选择生活场景"></div>
+          <label class="scene-label" for="journalInput">把当时的心情和细节写下来</label>
+          <textarea class="journal-input" id="journalInput" maxlength="320" placeholder="比如：下班路上开始下雨，陌生人把伞往我这边倾了一点。"></textarea>
+          <div class="compose-footer">
+            <div class="mood-row" role="group" aria-label="选择心情">
+              <span class="mood-hint">此刻心情</span>
+              <button class="mood-button" type="button" data-mood="🙂" aria-label="平静" aria-pressed="true">🙂</button>
+              <button class="mood-button" type="button" data-mood="🥰" aria-label="开心" aria-pressed="false">🥰</button>
+              <button class="mood-button" type="button" data-mood="😮" aria-label="惊喜" aria-pressed="false">😮</button>
+              <button class="mood-button" type="button" data-mood="😮‍💨" aria-label="疲惫" aria-pressed="false">😮‍💨</button>
+            </div>
+            <button class="primary-button" id="addEntryButton" type="button"><span aria-hidden="true">＋</span> 种下一朵</button>
+          </div>
+          <div class="helper-line"><span aria-hidden="true">✦</span>每记下一刻，就收获 1 枚蘑菇碎片</div>
+        </section>
+
+        <section class="panel garden-panel" aria-labelledby="gardenTitle">
+          <div class="garden-top">
+            <div class="garden-title"><span aria-hidden="true">🌱</span><h2 id="gardenTitle">今日菌落</h2></div>
+            <span class="garden-date" id="gardenDate"></span>
+          </div>
+          <div class="garden-bed" id="gardenBed" aria-live="polite"></div>
+          <div class="garden-bottom">
+            <div style="display:flex;align-items:center;gap:8px"><span class="progress-copy" id="progressCopy">0 / 5 个今日瞬间</span><span class="progress-track" aria-hidden="true"><span class="progress-fill" id="progressFill"></span></span></div>
+            <button class="review-button" id="reviewButton" type="button" disabled>夜间闪回 <span aria-hidden="true">→</span></button>
+          </div>
+        </section>
+      </div>
+
+      <div class="column">
+        <section class="panel phrase-panel" aria-labelledby="phraseTitle">
+          <div class="phrase-header">
+            <div><div class="eyebrow">POCKET ENGLISH</div><h2 id="phraseTitle">这一刻，可以这样说</h2></div>
+            <span class="level-tag">CET-4 · 6</span>
+          </div>
+          <p class="phrase-context" id="phraseContext">选一个场景，看看有哪些自然的说法。</p>
+          <div class="phrase-list" id="phraseList" aria-live="polite"></div>
+          <div class="phrase-note"><strong>小提示</strong>　先记住一句就好；点击喇叭可以听发音，日常表达不必追求复杂。</div>
+        </section>
+        <div class="bottom-note">在蘑菇地，普通的一天也值得被记住。</div>
+      </div>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div id="modalRoot"></div>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = "mushroom-garden-v1";
+      const scenes = [
+        { id: "daily", label: "☀️ 日常", context: "日常里那些值得记住的小事" },
+        { id: "cafe", label: "☕ 咖啡店", context: "点单、聊天与咖啡店里的小插曲" },
+        { id: "commute", label: "🚇 通勤", context: "路上遇到的人和城市的小瞬间" },
+        { id: "work", label: "💻 工作学习", context: "工作、课堂与一起努力的日子" },
+        { id: "friends", label: "🫶 和朋友", context: "朋友之间的闲聊和温柔时刻" },
+        { id: "food", label: "🍜 吃饭", context: "一顿饭、一道菜，或一次好好吃饭" },
+        { id: "outdoors", label: "🌿 户外", context: "散步、天气和自然带来的发现" },
+        { id: "travel", label: "🧳 出行", context: "旅行途中遇到的新风景" }
+      ];
+      const phraseBank = {
+        daily: [
+          ["It turned out to be a pretty good day.", "没想到今天过得还不错。"],
+          ["That little moment made me smile.", "那个小瞬间让我笑了。"],
+          ["I didn't expect that, but I'm glad it happened.", "我没想到会这样，不过很高兴事情发生了。"]
+        ],
+        cafe: [
+          ["Could I get a latte, please?", "可以给我一杯拿铁吗？"],
+          ["I'll have the same, thanks.", "我也要一样的，谢谢。"],
+          ["This place has a really nice atmosphere.", "这家店的氛围真不错。"]
+        ],
+        commute: [
+          ["I ran into someone on my way home.", "我回家的路上遇到了一个人。"],
+          ["The train was packed this morning.", "今天早上的地铁挤满了人。"],
+          ["It started raining just as I left.", "我刚出门就开始下雨了。"]
+        ],
+        work: [
+          ["I finally got the hang of it.", "我终于掌握窍门了。"],
+          ["We had a really helpful conversation.", "我们进行了一次很有帮助的交流。"],
+          ["I was nervous at first, but it went well.", "我一开始有点紧张，不过后来很顺利。"]
+        ],
+        friends: [
+          ["It's been a while! How have you been?", "好久不见！你最近怎么样？"],
+          ["I had such a good time catching up with you.", "和你聊近况真的很开心。"],
+          ["Thanks for being there for me.", "谢谢你一直陪着我。"]
+        ],
+        food: [
+          ["This is exactly what I needed today.", "这正是我今天需要的。"],
+          ["You have to try a bite of this.", "你一定要尝一口这个。"],
+          ["I'm glad we decided to eat here.", "很高兴我们决定来这里吃饭。"]
+        ],
+        outdoors: [
+          ["The air feels so fresh after the rain.", "雨后的空气特别清新。"],
+          ["I took a little walk to clear my head.", "我出去走了走，理清思绪。"],
+          ["I didn't realize how beautiful it was here.", "我之前都没发现这里这么美。"]
+        ],
+        travel: [
+          ["We stumbled upon a lovely little place.", "我们偶然发现了一家很棒的小店。"],
+          ["What's the best way to get there?", "去那里最方便的方式是什么？"],
+          ["I wish I could stay a little longer.", "真希望我能再多待一会儿。"]
+        ]
+      };
+      const shopItems = [
+        { id: "dusk", name: "薄暮林间", cost: 5, kind: "background", preview: "night", icon: "🌙" },
+        { id: "paper", name: "晨雾草甸", cost: 8, kind: "background", preview: "", icon: "🌾" },
+        { id: "floral", name: "野花斑点", cost: 6, kind: "pattern", preview: "floral", icon: "🌼" },
+        { id: "ink", name: "墨点菌伞", cost: 10, kind: "pattern", preview: "ink", icon: "🖤" }
+      ];
+      const contextRules = [
+        { terms: ["雨伞", "伞", "umbrella"], phrases: [["A stranger shared their umbrella with me.", "有个陌生人和我共撑一把伞。"]] },
+        { terms: ["下雨", "雨", "rain"], phrases: [["The rain started on my way home.", "我回家路上开始下雨了。"]] },
+        { terms: ["陌生人", "路人", "stranger"], phrases: [["A stranger did something really kind for me.", "一位陌生人对我特别友善。"]] },
+        { terms: ["咖啡", "拿铁", "咖啡店", "coffee", "latte"], phrases: [["I stopped by a cafe for a coffee.", "我顺路去咖啡店喝了杯咖啡。"]] },
+        { terms: ["朋友", "好友", "friend"], phrases: [["I caught up with a friend today.", "我今天和一位朋友聊了聊近况。"]] },
+        { terms: ["会议", "开会", "meeting"], phrases: [["We had a useful meeting this afternoon.", "我们今天下午开了个很有收获的会。"]] },
+        { terms: ["午饭", "晚饭", "吃饭", "dinner", "lunch"], phrases: [["We found a nice place to eat.", "我们找到了一家不错的餐馆。"]] }
+      ];
+      const freshState = () => ({ entries: [], fragments: 0, owned: [], background: "forest", pattern: "classic", sound: true, lastVisit: "" });
+      let state;
+      try {
+        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+        state = { ...freshState(), ...(stored && typeof stored === "object" ? stored : {}) };
+        if (!Array.isArray(state.entries)) state.entries = [];
+        if (!Array.isArray(state.owned)) state.owned = [];
+      } catch { state = freshState(); }
+      let selectedScene = "daily";
+      let selectedMood = "🙂";
+      let toastTimer;
+
+      const $ = (selector, root = document) => root.querySelector(selector);
+      const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+      const todayKey = () => {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      };
+      const todayEntries = () => state.entries.filter(entry => entry.date === todayKey());
+      const save = () => {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+        catch { showToast("本机存储空间不足，这条记录暂时无法保存。"); }
+      };
+      const showToast = message => {
+        const toast = $("#toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
+      };
+      const formatDate = date => new Intl.DateTimeFormat("zh-CN", { month: "long", day: "numeric", weekday: "long" }).format(date);
+      const formatTime = timestamp => new Intl.DateTimeFormat("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(timestamp));
+
+      function playChime(kind = "seed") {
+        if (!state.sound) return;
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          const context = new AudioContext();
+          const notes = kind === "flash" ? [523.25, 659.25, 783.99] : [659.25, 783.99];
+          notes.forEach((frequency, index) => {
+            const oscillator = context.createOscillator();
+            const gain = context.createGain();
+            const start = context.currentTime + index * .14;
+            oscillator.type = "sine";
+            oscillator.frequency.setValueAtTime(frequency, start);
+            gain.gain.setValueAtTime(.0001, start);
+            gain.gain.exponentialRampToValueAtTime(.075, start + .025);
+            gain.gain.exponentialRampToValueAtTime(.0001, start + .42);
+            oscillator.connect(gain).connect(context.destination);
+            oscillator.start(start);
+            oscillator.stop(start + .45);
+          });
+          setTimeout(() => context.close(), 1000);
+        } catch { /* Audio is optional; the journal still works without it. */ }
+      }
+
+      function renderScenes() {
+        $("#scenePicker").innerHTML = scenes.map(scene => `<button class="scene-chip" type="button" data-scene="${scene.id}" aria-pressed="${scene.id === selectedScene}">${scene.label}</button>`).join("");
+      }
+
+      function renderPhrases(text = $("#journalInput").value) {
+        const scene = scenes.find(item => item.id === selectedScene);
+        const scenePhrases = phraseBank[selectedScene] || phraseBank.daily;
+        const loweredText = text.toLocaleLowerCase();
+        const clue = contextRules.find(rule => rule.terms.some(term => loweredText.includes(term.toLocaleLowerCase())));
+        const phrases = clue ? [...clue.phrases, ...scenePhrases.slice(0, 2)] : scenePhrases;
+        const matchedTerm = clue?.terms.find(term => loweredText.includes(term.toLocaleLowerCase()));
+        $("#phraseContext").textContent = clue ? `从「${matchedTerm}」联想 · ${scene.context}` : scene.context;
+        $("#phraseList").innerHTML = phrases.map(([english, chinese], index) => `
+          <article class="phrase-item" style="animation-delay:${index * 55}ms">
+            <span class="phrase-mushroom" aria-hidden="true"></span>
+            <div><div class="phrase-en">${escapeHtml(english)}</div><div class="phrase-zh">${escapeHtml(chinese)}</div></div>
+            <button class="play-button" type="button" data-speak="${escapeHtml(english)}" aria-label="播放：${escapeHtml(english)}" title="播放发音">▶</button>
+          </article>`).join("");
+      }
+
+      function renderGarden() {
+        const entries = todayEntries();
+        $("#gardenBed").innerHTML = entries.length ? entries.map((entry, index) => `
+          <article class="mushroom-card" style="animation-delay:${index * 65}ms" title="${escapeHtml(entry.text)}">
+            <div class="mushroom-visual" aria-hidden="true"><span class="mushroom-cap"></span><span class="mushroom-stem"></span></div>
+            <time>${formatTime(entry.createdAt)} · ${entry.mood}</time>
+            <div class="mushroom-caption">${escapeHtml(entry.text)}</div>
+          </article>`).join("") : `<div class="empty-garden">草地还空着，种下今天的第一朵蘑菇吧。</div>`;
+        $("#fragmentCount").textContent = state.fragments;
+        $("#gardenDate").textContent = new Intl.DateTimeFormat("zh-CN", { month: "numeric", day: "numeric" }).format(new Date());
+        $("#progressCopy").textContent = `${entries.length} / 5 个今日瞬间`;
+        $("#progressFill").style.width = `${Math.min(entries.length / 5 * 100, 100)}%`;
+        $("#reviewButton").disabled = entries.length === 0;
+        const streak = state.lastVisit && state.lastVisit !== todayKey() ? "欢迎回来，菌落还在生长" : "新的菌落，正在生长";
+        $("#streakLabel").textContent = streak;
+      }
+
+      function applyDecorations() {
+        document.body.dataset.background = state.background;
+        document.body.dataset.pattern = state.pattern;
+        $("#soundButton").setAttribute("aria-pressed", String(state.sound));
+        $("#soundButton").innerHTML = `<span aria-hidden="true">${state.sound ? "♫" : "♪"}</span><span>${state.sound ? "音效" : "静音"}</span>`;
+      }
+
+      function addEntry() {
+        const input = $("#journalInput");
+        const text = input.value.trim();
+        if (!text) {
+          input.focus();
+          showToast("先写下一件小事，再种下蘑菇吧。🍄");
+          return;
+        }
+        const scene = scenes.find(item => item.id === selectedScene);
+        state.entries.push({ id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`, text, scene: selectedScene, sceneLabel: scene.label, mood: selectedMood, date: todayKey(), createdAt: Date.now() });
+        state.fragments += 1;
+        state.lastVisit = todayKey();
+        save();
+        input.value = "";
+        renderGarden();
+        playChime();
+        showToast("一朵红蘑菇长出来了，碎片 +1 ✦");
+      }
+
+      function renderShop() {
+        const root = $("#modalRoot");
+        root.innerHTML = `<div class="modal-backdrop" data-dismiss="true"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
+          <button class="modal-close" type="button" data-close aria-label="关闭">×</button>
+          <div class="modal-heading"><div class="eyebrow">A TINY MUSHROOM SHOP</div><h2 id="shopTitle">给蘑菇地换件新衣裳</h2><p>你有 <strong>${state.fragments}</strong> 枚碎片。每天记下小事，就能慢慢解锁喜欢的林地。</p></div>
+          <div class="shop-list">${shopItems.map(item => {
+            const owned = state.owned.includes(item.id);
+            const active = item.kind === "background" ? state.background === item.id : state.pattern === item.id;
+            return `<article class="shop-item"><div class="shop-preview ${item.preview}" aria-hidden="true">${item.icon}</div><div class="shop-item-footer"><div><div class="shop-name">${item.name}</div><div class="shop-cost">${owned ? (active ? "正在使用" : "已收入图鉴") : `✦ ${item.cost} 枚碎片`}</div></div><button class="shop-action" type="button" data-buy="${item.id}" ${active || (!owned && state.fragments < item.cost) ? "disabled" : ""}>${active ? "使用中" : owned ? "使用" : "兑换"}</button></div></article>`;
+          }).join("")}</div>
+        </section></div>`;
+      }
+
+      function handleShopAction(itemId) {
+        const item = shopItems.find(candidate => candidate.id === itemId);
+        if (!item) return;
+        if (!state.owned.includes(item.id)) {
+          if (state.fragments < item.cost) return showToast("碎片还不够，再记下一些小事吧。");
+          state.fragments -= item.cost;
+          state.owned.push(item.id);
+        }
+        if (item.kind === "background") state.background = item.id;
+        else state.pattern = item.id;
+        save();
+        applyDecorations();
+        renderGarden();
+        renderShop();
+        showToast(`已换上「${item.name}」✨`);
+      }
+
+      function renderReflection() {
+        const entries = todayEntries();
+        if (!entries.length) return showToast("先在今天种下一朵蘑菇，夜晚才有故事回放。🌙");
+        const lastEntry = entries[entries.length - 1];
+        const phrases = phraseBank[lastEntry.scene] || phraseBank.daily;
+        const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+        const sceneNames = [...new Set(entries.map(entry => entry.sceneLabel.replace(/^\S+\s*/, "")))].join("、");
+        const moodSet = [...new Set(entries.map(entry => entry.mood))].join(" ");
+        $("#modalRoot").innerHTML = `<div class="modal-backdrop" data-dismiss="true"><section class="modal flashback" role="dialog" aria-modal="true" aria-labelledby="flashTitle">
+          <button class="modal-close" type="button" data-close aria-label="关闭">×</button>
+          <div class="flash-scene"><div class="giant-mushroom" aria-hidden="true"><span class="giant-cap"></span><span class="giant-stem"></span></div><span class="flash-label">A DAY IN YOUR FOREST</span></div>
+          <div class="eyebrow">TONIGHT'S FLASHBACK · ${entries.length} ${entries.length === 1 ? "MOMENT" : "MOMENTS"}</div>
+          <div class="modal-heading"><h2 id="flashTitle">今天的你，留下了 ${entries.length} 个瞬间。</h2><p>${sceneNames ? `从${escapeHtml(sceneNames)}到一段段心情，` : ""}这些细小的事，拼成了属于你的一天。</p></div>
+          <p class="reflection-lead">${moodSet ? `${moodSet}　` : ""}${escapeHtml(lastEntry.text)}</p>
+          <ul class="reflection-list">${entries.map(entry => `<li><strong>${entry.mood} ${formatTime(entry.createdAt)}</strong>　${escapeHtml(entry.text)}</li>`).join("")}</ul>
+          <div class="flash-phrase"><div class="eyebrow">TAKE A LINE WITH YOU</div><div class="phrase-en" style="margin-top:7px">${escapeHtml(phrase[0])}</div><div class="phrase-zh" style="margin-top:4px">${escapeHtml(phrase[1])}</div></div>
+          <div class="flash-actions"><button class="sound-toggle" type="button" id="replayButton" aria-pressed="true">♫ 再听一次闪回</button><button class="primary-button" type="button" data-close>收好今天　✓</button></div>
+        </section></div>`;
+        playChime("flash");
+      }
+
+      function closeModal() { $("#modalRoot").innerHTML = ""; }
+      function speak(text) {
+        if (!("speechSynthesis" in window)) return showToast("这个浏览器暂不支持语音播放。你仍然可以阅读这句表达。");
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "en-US";
+        utterance.rate = .9;
+        window.speechSynthesis.speak(utterance);
+      }
+
+      $("#todayDate").textContent = formatDate(new Date());
+      renderScenes();
+      renderPhrases();
+      renderGarden();
+      applyDecorations();
+      $("#scenePicker").addEventListener("click", event => {
+        const button = event.target.closest("[data-scene]");
+        if (!button) return;
+        selectedScene = button.dataset.scene;
+        renderScenes();
+        renderPhrases($("#journalInput").value);
+      });
+      $("#phraseList").addEventListener("click", event => {
+        const button = event.target.closest("[data-speak]");
+        if (button) speak(button.dataset.speak);
+      });
+      $(".mood-row").addEventListener("click", event => {
+        const button = event.target.closest("[data-mood]");
+        if (!button) return;
+        selectedMood = button.dataset.mood;
+        document.querySelectorAll(".mood-button").forEach(item => item.setAttribute("aria-pressed", String(item === button)));
+      });
+      $("#addEntryButton").addEventListener("click", addEntry);
+      $("#journalInput").addEventListener("input", event => renderPhrases(event.target.value));
+      $("#journalInput").addEventListener("keydown", event => {
+        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") addEntry();
+      });
+      $("#shopButton").addEventListener("click", renderShop);
+      $("#reviewButton").addEventListener("click", renderReflection);
+      $("#soundButton").addEventListener("click", () => {
+        state.sound = !state.sound;
+        save();
+        applyDecorations();
+        if (state.sound) playChime();
+      });
+      $("#modalRoot").addEventListener("click", event => {
+        if (event.target.closest("[data-close]") || event.target.matches("[data-dismiss]")) closeModal();
+        const buyButton = event.target.closest("[data-buy]");
+        if (buyButton) handleShopAction(buyButton.dataset.buy);
+        if (event.target.closest("#replayButton")) playChime("flash");
+      });
+      document.addEventListener("keydown", event => { if (event.key === "Escape") closeModal(); });
+      state.lastVisit = todayKey();
+      save();
+    })();
+  </script>
+</body>
+</html>
